@@ -1,10 +1,12 @@
 package com.clearing.netting.adapter.out.persistence;
 
+import com.clearing.netting.adapter.out.persistence.entity.FxRateJpaEntity;
 import com.clearing.netting.adapter.out.persistence.entity.MemberJpaEntity;
 import com.clearing.netting.adapter.out.persistence.entity.NetPositionJpaEntity;
 import com.clearing.netting.adapter.out.persistence.entity.NettingRunJpaEntity;
 import com.clearing.netting.adapter.out.persistence.entity.ObligationJpaEntity;
 import com.clearing.netting.adapter.out.persistence.entity.UserJpaEntity;
+import com.clearing.netting.domain.model.FxRate;
 import com.clearing.netting.domain.model.Member;
 import com.clearing.netting.domain.model.NetPosition;
 import com.clearing.netting.domain.model.NettingRun;
@@ -97,6 +99,25 @@ final class PersistenceMapper {
 
     static UserAccount toDomain(UserJpaEntity e) {
         return new UserAccount(e.getUserId(), e.getUsername(), e.getPasswordHash(), e.getRole());
+    }
+
+    static FxRate toDomain(FxRateJpaEntity e) {
+        return new FxRate(
+                e.getRateId(),
+                e.getBaseCurrency(),
+                e.getQuoteCurrency(),
+                e.getRate(),
+                e.getEffectiveDate());
+    }
+
+    static FxRateJpaEntity toEntity(FxRate r) {
+        FxRateJpaEntity e = new FxRateJpaEntity();
+        e.setRateId(r.getRateId());
+        e.setBaseCurrency(r.getBaseCurrency());
+        e.setQuoteCurrency(r.getQuoteCurrency());
+        e.setRate(r.getRate());
+        e.setEffectiveDate(r.getEffectiveDate());
+        return e;
     }
 
     static UserJpaEntity toEntity(UserAccount u) {

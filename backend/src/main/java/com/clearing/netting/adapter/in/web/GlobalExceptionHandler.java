@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         return switch (code) {
             case "AUTH_FAILED", "UNAUTHORIZED" -> HttpStatus.UNAUTHORIZED;
             case "FORBIDDEN" -> HttpStatus.FORBIDDEN;
-            case "MEMBER_NOT_FOUND", "RUN_NOT_FOUND" -> HttpStatus.NOT_FOUND;
+            case "MEMBER_NOT_FOUND", "RUN_NOT_FOUND", "FX_RATE_NOT_FOUND" -> HttpStatus.NOT_FOUND;
             default -> HttpStatus.BAD_REQUEST;
         };
     }

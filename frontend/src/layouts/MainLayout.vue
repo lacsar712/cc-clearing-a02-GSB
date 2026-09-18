@@ -7,6 +7,7 @@
         <el-menu-item index="/members">会员</el-menu-item>
         <el-menu-item index="/obligations">义务</el-menu-item>
         <el-menu-item index="/netting">轧差执行</el-menu-item>
+        <el-menu-item index="/fx-report">汇率报告</el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
