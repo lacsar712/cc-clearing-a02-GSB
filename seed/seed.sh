@@ -55,5 +55,37 @@ curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: a
 curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
   -d "{\"payerMemberId\":\"${ID1}\",\"payeeMemberId\":\"${ID3}\",\"currency\":\"USD\",\"amount\":25000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
 
+echo "Seeding FX rates effective ${SETTLE_DATE}..."
+post_rate() {
+  curl -sf -X POST "${BACKEND_URL}/api/fx-rates" -H "$AUTH" -H "Content-Type: application/json" \
+    -d "{\"baseCurrency\":\"$1\",\"quoteCurrency\":\"$2\",\"rate\":$3,\"effectiveDate\":\"${SETTLE_DATE}\"}" >/dev/null
+}
+post_rate USD CNY 7.1000000000
+post_rate CNY USD 0.1408450704
+post_rate EUR USD 1.0800000000
+post_rate USD EUR 0.9259259259
+post_rate EUR CNY 7.6680000000
+post_rate CNY EUR 0.1304121022
+
+echo "Seeding OPEN obligations for settleDate=${SETTLE_DATE} EUR/CNY..."
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID1}\",\"payeeMemberId\":\"${ID2}\",\"currency\":\"EUR\",\"amount\":50000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID2}\",\"payeeMemberId\":\"${ID3}\",\"currency\":\"EUR\",\"amount\":30000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID3}\",\"payeeMemberId\":\"${ID1}\",\"currency\":\"EUR\",\"amount\":20000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID2}\",\"payeeMemberId\":\"${ID1}\",\"currency\":\"CNY\",\"amount\":800000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID3}\",\"payeeMemberId\":\"${ID2}\",\"currency\":\"CNY\",\"amount\":500000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/obligations" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"payerMemberId\":\"${ID1}\",\"payeeMemberId\":\"${ID3}\",\"currency\":\"CNY\",\"amount\":300000.00000000,\"tradeDate\":\"${TRADE_DATE}\",\"settleDate\":\"${SETTLE_DATE}\"}" >/dev/null
+
+echo "Running EUR/CNY netting so the FX report has converted data..."
+curl -sf -X POST "${BACKEND_URL}/api/netting-runs" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"settleDate\":\"${SETTLE_DATE}\",\"currency\":\"EUR\"}" >/dev/null
+curl -sf -X POST "${BACKEND_URL}/api/netting-runs" -H "$AUTH" -H "Content-Type: application/json" \
+  -d "{\"settleDate\":\"${SETTLE_DATE}\",\"currency\":\"CNY\"}" >/dev/null
+
 echo "Seed completed successfully"
 exit 0
